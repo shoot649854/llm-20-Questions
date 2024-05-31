@@ -1,26 +1,50 @@
 name: 👍 Build Test
+
 on:
- push:
-   branch:
-     - '*'
+  push:
+    branches:
+      - '*'
+
 jobs:
- build:
-   runs-on: ubuntu-latest
-   steps:
-     - name: checkout
-       uses: actions/checkout@v3
+  build:
+    runs-on: ubuntu-latest
 
-     - name: setup-node
-       uses: actions/setup-node@v3
-       with:
-         node-version: 20
-         cache: npm
+    steps:
+      - name: checkout
+        uses: actions/checkout@v3
 
-     - name: npm-install
-       run: npm i
+      - name: setup-node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+          cache: npm
 
-     - name: app-build
-       run: npm run build
+      - name: npm-install
+        run: npm i
 
-     - name: app-format
-       run: npm run format
+      - name: app-build
+        run: npm run build
+
+      - name: app-format
+        run: npm run format
+
+      - name: setup-python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: install-poetry
+        run: |
+          curl -sSL https://install.python-poetry.org | python3 -
+
+      - name: install-dependencies
+        run: |
+          poetry install
+
+      - name: run-tests
+        run: |
+          poetry run pytest
+
+      - name: lint
+        run: |
+          poetry run flake8 .
